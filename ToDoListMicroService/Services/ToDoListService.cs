@@ -1,5 +1,4 @@
 ﻿using ToDoListMicroService.Entities;
-using ToDoListMicroService.Filter;
 using ToDoListMicroService.Models;
 using ToDoListMicroService.Repository;
 

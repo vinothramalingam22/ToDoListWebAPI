@@ -9,18 +9,6 @@ builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange
 builder.Services.AddOcelot(builder.Configuration);
 
 var app = builder.Build();
-////builder.Services.AddCors(options =>
-////{
-////    options.AddDefaultPolicy(
-////        builder =>
-////        {
-////            builder
-////            .AllowAnyOrigin()
-////            .AllowAnyMethod()
-////            .AllowAnyHeader();
-////        });
-////});
-
 app.MapGet("/", () => "Hello World!");
 app.MapControllers();
 

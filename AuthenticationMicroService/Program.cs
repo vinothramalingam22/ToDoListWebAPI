@@ -1,11 +1,8 @@
 using AuthenticationMicroService.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using ToDoListMicroService.DataBaseConfig;
 
@@ -47,25 +44,43 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+//{
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = false,
+//        ValidateAudience = false,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//       //// ValidIssuer = "http://localhost:5265",
+//       //// ValidAudience = "http://localhost:5265",
+//       //// IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345")),
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+//                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+//    };
+//});
+
+builder.Services.AddAuthentication(options =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
     {
+        ValidIssuer = "http://localhost:5265/",
+        ValidAudience = "http://localhost:5265/",
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                builder.Configuration.GetSection("AppSettings:Token").Value)),
         ValidateIssuer = false,
         ValidateAudience = false,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-       //// ValidIssuer = "http://localhost:5265",
-       //// ValidAudience = "http://localhost:5265",
-       //// IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345")),
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+        ValidateLifetime = false,
+        ValidateIssuerSigningKey = false
     };
 });
 
 var app = builder.Build();
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -76,9 +91,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

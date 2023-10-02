@@ -18,13 +18,6 @@ namespace ToDoListMicroService.Repository
 
         }
 
-        ////private readonly IMongoCollection<ToDoList> _toDoListRepository;
-        ////public ToDoListRepository(IToDoListDataBaseSettings settings, IMongoClient mongoClient)
-        ////{
-        ////    var mongoDB = mongoClient.GetDatabase(settings.DatabaseName);
-        ////    this._toDoListRepository = mongoDB.GetCollection<ToDoList>(settings.CollectionName);
-        ////}
-
         public async Task<ToDoList> Create(ToDoList toDoList)
         {
             await _toDoListRepository.InsertOneAsync(toDoList);

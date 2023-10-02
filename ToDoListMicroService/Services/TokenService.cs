@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Security.Claims;
-using System.Text;
+﻿using System.Security.Claims;
 
 namespace ToDoListMicroService.Services
 {
@@ -17,9 +15,15 @@ namespace ToDoListMicroService.Services
         {
 
             var result = string.Empty;
+
             if (_httpContextAccessor.HttpContext != null)
             {
-                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
+                var claims = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
+                
+                if (claims != null)
+                {
+                    result = claims.ToString();
+                }
             }
 
             return result;

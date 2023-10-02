@@ -20,7 +20,6 @@ namespace ToDoListMicroService.Repository
 
         public IQueryable<ToDoList> Get(string userId)
         {
-
             var response =  _toDoListRepository.AsQueryable().Where(x => x.UserId.ToLower() == userId.ToLower());
 
             return response;

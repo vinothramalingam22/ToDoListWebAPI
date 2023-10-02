@@ -1,6 +1,5 @@
 ﻿using AuthenticationMicroService.Entities;
 using AuthenticationMicroService.Models;
-using DnsClient;
 using MongoDB.Driver;
 using ToDoListMicroService.DataBaseConfig;
 
@@ -39,7 +38,7 @@ namespace AuthenticationMicroService.Services
 
         public bool IsValidUser(Login login)
         {
-            var response =  _userService.Find( x => x.UserName.ToLower() == login.UserName.ToLower() && x.Password.ToLower() == login.Password.ToLower()).FirstOrDefault();
+            var response =  _userService.Find(x => x.UserName.ToLower() == login.UserName.ToLower() && x.Password.ToLower() == login.Password.ToLower()).FirstOrDefault();
 
             return response != null;
         }

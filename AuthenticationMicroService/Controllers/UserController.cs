@@ -1,15 +1,8 @@
 ﻿
-using AuthenticationMicroService.Entities;
 using AuthenticationMicroService.Models;
 using AuthenticationMicroService.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using System.Linq;
 using MassTransit;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,7 +10,7 @@ using MassTransit;
 namespace AuthenticationMicroService.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -35,7 +28,7 @@ namespace AuthenticationMicroService.Controllers
         }
 
         // POST api/<UserController>
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost]
         [Route("Register")]
         public ActionResult Register([FromBody] Register model)

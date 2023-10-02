@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using ToDoListMicroService.QueriesHandler;
 using ToDoListMicroService.Filter;
 using ToDoListMicroService.Models;
 using ToDoListMicroService.Services;
@@ -14,6 +12,11 @@ using ToDoListMicroService.Commands;
 
 namespace ToDoListMicroService.Controllers
 {
+    /// <summary>
+    /// ToDoList
+    /// </summary>
+    /// <response code="200">All good</response>
+    /// <response code="401">Unauthorized</response>
     [ApiController]
     [Route("todolist/api/v1/user")]
     [Authorize]
@@ -31,11 +34,10 @@ namespace ToDoListMicroService.Controllers
             _tokenService= tokenService;
             _logger = logger;
         }
-
        
         [HttpGet]
         [Route("list/all")]
-        public async Task<ActionResult< List<ToDoListResponseModel>>> Get([FromQuery] PaginationFilter filter)
+        public async Task<ActionResult<List<ToDoListResponseModel>>> Get([FromQuery] PaginationFilter filter)
         {
             try
             {
@@ -58,7 +60,7 @@ namespace ToDoListMicroService.Controllers
             }
         }
 
-      
+        [AllowAnonymous]
         [HttpGet("list/{taskName}")]
         public async Task<ActionResult<ToDoListResponseModel>> Get(string taskName)
         {
@@ -93,7 +95,7 @@ namespace ToDoListMicroService.Controllers
             {
                 var userId = _tokenService.GetName();
 
-                var request = new CreateToDoListRequest()
+                var createRequest = new CreateToDoListRequest()
                 {
                     Name= model.Name,
                     Description = model.Description,
@@ -104,7 +106,7 @@ namespace ToDoListMicroService.Controllers
                     UserId = userId
                 };
 
-                await _mediator.Send(request);
+                await _mediator.Send(createRequest);
 
                 return Ok(StatusCodes.Status201Created);
 
@@ -127,13 +129,13 @@ namespace ToDoListMicroService.Controllers
                     return StatusCode(StatusCodes.Status400BadRequest, "Invalid status");
                 }
 
-                var request = new UpdateToDoListRequest()
+                var updateToDoListRequest = new UpdateToDoListRequest()
                 {
                     Id = id,
                     Status = taskStatus
                 };
 
-                var response = await _mediator.Send(request); 
+                var response = await _mediator.Send(updateToDoListRequest); 
 
                 if (response != null)
                 {

@@ -18,7 +18,7 @@ namespace ToDoListMicroService.Entities
         [Required]
         public string Description { get; set; }
 
-        [BsonElement("startDateDate")]
+        [BsonElement("startDate")]
         [Required]
         public DateTime StartDate { get; set; }
 

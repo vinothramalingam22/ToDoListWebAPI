@@ -1,17 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace AuthenticationMicroService.Models
-{
-   
+{   
     public class Register
     {
-
-        [JsonProperty("userName")]
+        [BsonElement("userName")]
         [Required]
         public string UserName { get; set; }
 
-        [JsonProperty("password")]
+        [BsonElement("password")]
         [Required]
         public string Password { get; set; }
 
