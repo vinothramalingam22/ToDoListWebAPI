@@ -48,7 +48,7 @@ namespace AuthenticationMicroService.Controllers
 
                 _logger.LogInformation("User Registered Successfully", model.UserName);
 
-                return Ok(StatusCodes.Status200OK);
+                return Ok(StatusCodes.Status201Created);
             }
             catch (Exception ex)
             {

@@ -53,16 +53,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMediatR(typeof(Program).Assembly);
 builder.Services.AddCors();
-////builder.Services.AddCors(options =>
-////{
-////    options.AddDefaultPolicy(
-////    builder =>
-////    {
-////        builder.WithOrigins("http://localhost:4200")
-////                            .AllowAnyHeader()
-////                            .AllowAnyMethod();
-////    });
-////});
 
 //JWT
 builder.Services.AddAuthentication(options =>
