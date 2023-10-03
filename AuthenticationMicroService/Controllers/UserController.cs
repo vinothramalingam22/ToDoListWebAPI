@@ -4,13 +4,14 @@ using AuthenticationMicroService.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MassTransit;
+using DnsClient;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace AuthenticationMicroService.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -28,8 +29,8 @@ namespace AuthenticationMicroService.Controllers
         }
 
         // POST api/<UserController>
-        //[AllowAnonymous]
         [HttpPost]
+        [AllowAnonymous]
         [Route("Register")]
         public ActionResult Register([FromBody] Register model)
         {
@@ -47,7 +48,7 @@ namespace AuthenticationMicroService.Controllers
 
                 _logger.LogInformation("User Registered Successfully", model.UserName);
 
-                return Ok(StatusCodes.Status201Created);
+                return Ok(StatusCodes.Status200OK);
             }
             catch (Exception ex)
             {
@@ -64,15 +65,16 @@ namespace AuthenticationMicroService.Controllers
         {
             try
             {
-                var isValidUser = _userService.IsValidUser(model);
-
-                if (isValidUser)
+                Login login = new Login();
+                login.UserName = model.UserName;
+                var userInfo = AuthenticateUser(model);
+                if (userInfo != null)
                 {
                     _publishEndpoint.Publish(new UserMessageQueue() { UserId = model.UserName });
 
-                    var tokenString =_tokenService.GenerateToken(model.UserName);
+                    var tokenString =_tokenService.GenerateToken(userInfo);
 
-                    return Ok(new AuthenticatedResponse { Token = tokenString, StatusCode = StatusCodes.Status200OK });
+                    return Ok(new AuthenticatedResponse { Token = tokenString, StatusCode = StatusCodes.Status201Created });
                 }
 
                 _logger.LogError("Invalid login credentials", model.UserName);
@@ -85,6 +87,22 @@ namespace AuthenticationMicroService.Controllers
                 _logger.LogInformation(ex?.Message, model.UserName);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
+        }
+
+        private Login AuthenticateUser(Login login)
+        {         
+            var userDetails = _userService.GetLoginUser(login);
+
+            if (userDetails != null)
+            {
+                return new Models.Login
+                {
+                    UserName = userDetails.UserName,
+                    Password = userDetails.Password,
+                    RoleName = userDetails.Role                    
+                };
+            }
+            return new Models.Login();
         }
     }
 }

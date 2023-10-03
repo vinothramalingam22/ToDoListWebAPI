@@ -1,4 +1,5 @@
-﻿using AuthenticationMicroService.Models;
+﻿using AuthenticationMicroService.Entities;
+using AuthenticationMicroService.Models;
 
 namespace AuthenticationMicroService.Services
 {
@@ -9,6 +10,7 @@ namespace AuthenticationMicroService.Services
         public bool IsValidUser(Login login);
 
         public bool IsUerExist(string email);
-       
+
+        public User GetLoginUser(Login login);
     }
 }

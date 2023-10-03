@@ -1,14 +1,17 @@
 ﻿using MediatR;
 using ToDoListMicroService.Models;
 using ToDoListMicroService.Repository;
-using System.Linq;
 using ToDoListMicroService.Queries;
 
 namespace ToDoListMicroService.QueriesHandler
 {
     public class GetAllToDoListQueryHandler : IRequestHandler<GetAllToDoListQuery, PagedToDoListResponse>
     {
+        #region Private Declaration
         private readonly IToDoListQueryRepository _toDoListQueryRepository;
+        #endregion
+
+        #region Public Methods
 
         public GetAllToDoListQueryHandler(IToDoListQueryRepository toDoListQueryRepository)
         {
@@ -76,5 +79,7 @@ namespace ToDoListMicroService.QueriesHandler
 
              });
         }
+        
+        #endregion
     }
 }

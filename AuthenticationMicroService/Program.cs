@@ -14,14 +14,12 @@ builder.Logging.AddLog4Net();
 // Add services to the container.
 builder.Services.Configure<UserDataBaseSettings>(builder.Configuration.GetSection(nameof(UserDataBaseSettings)));
 
-builder.Services.AddSingleton<IUserDataBaseSettings>(sp =>
-              sp.GetRequiredService<IOptions<UserDataBaseSettings>>().Value);
-
+builder.Services.AddSingleton<IUserDataBaseSettings>(sp => sp.GetRequiredService<IOptions<UserDataBaseSettings>>().Value);
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddHttpContextAccessor();
 
-// Mass Transit
+//RabbitMQ - Mass Transit
 var configSection = builder.Configuration.GetSection("ServiceBus");
 var connectionUri = configSection.GetSection("ConnectionUri").Value;
 var usename = configSection.GetSection("Username").Value;
@@ -40,26 +38,10 @@ builder.Services.AddMassTransit(x =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-//{
-//    options.TokenValidationParameters = new TokenValidationParameters
-//    {
-//        ValidateIssuer = false,
-//        ValidateAudience = false,
-//        ValidateLifetime = true,
-//        ValidateIssuerSigningKey = true,
-//       //// ValidIssuer = "http://localhost:5265",
-//       //// ValidAudience = "http://localhost:5265",
-//       //// IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345")),
-//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-//                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
-//    };
-//});
-
+//JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -68,9 +50,9 @@ builder.Services.AddAuthentication(options =>
 }).AddJwtBearer(o =>
 {
     o.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = "http://localhost:5265/",
-        ValidAudience = "http://localhost:5265/",
+    {        
+        ValidIssuer = builder.Configuration.GetSection("Jwt:Issuer").Value,
+        ValidAudience = builder.Configuration.GetSection("Jwt:Audience").Value,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 builder.Configuration.GetSection("AppSettings:Token").Value)),
         ValidateIssuer = false,
@@ -87,7 +69,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "User Services"));
+    app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Services"));
 }
 
 app.UseAuthentication();

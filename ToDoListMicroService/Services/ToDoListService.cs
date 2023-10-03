@@ -3,11 +3,14 @@ using ToDoListMicroService.Models;
 using ToDoListMicroService.Repository;
 
 namespace ToDoListMicroService.Services
-{
+{    
     public class ToDoListService : IToDoListService
     {
+        #region Private declaration
         private IToDoListCommandRepository _toDoListRepository;
+        #endregion
 
+        #region Public Methods
         public ToDoListService(IToDoListCommandRepository toDoListRepository)
         {
             _toDoListRepository = toDoListRepository;
@@ -37,5 +40,6 @@ namespace ToDoListMicroService.Services
            var response =  await _toDoListRepository.Update(id, status);
             return response;
         }
+        #endregion
     }
 }

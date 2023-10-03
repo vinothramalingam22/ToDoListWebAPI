@@ -14,5 +14,7 @@ namespace AuthenticationMicroService.Models
         [Required]
         public string Password { get; set; }
 
+        [BsonElement("roleName")]
+        public string RoleName { get; set; } = string.Empty;
     }
 }

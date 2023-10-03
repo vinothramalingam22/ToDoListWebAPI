@@ -1,14 +1,16 @@
 ﻿using MongoDB.Driver;
 using ToDoListMicroService.DataBaseConfig;
 using ToDoListMicroService.Entities;
-using ToDoListMicroService.Services;
 
 namespace ToDoListMicroService.Repository
 {
     public class ToDoListCommandRepository: IToDoListCommandRepository
     {
+        #region Private declarations
         private readonly IMongoCollection<ToDoList> _toDoListRepository;
+        #endregion
 
+        #region Public Methods
         public ToDoListCommandRepository(IToDoListDataBaseSettings settings)
         {
             var client = new MongoClient(settings.ConnectionString);
@@ -37,5 +39,6 @@ namespace ToDoListMicroService.Repository
 
             return status;
         }
+        #endregion
     }
 }

@@ -1,14 +1,16 @@
 ﻿using MongoDB.Driver;
 using ToDoListMicroService.DataBaseConfig;
 using ToDoListMicroService.Entities;
-using ToDoListMicroService.Services;
 
 namespace ToDoListMicroService.Repository
-{
+{    
     public class ToDoListQueryRepository: IToDoListQueryRepository
     {
+        #region private variable
         private readonly IMongoCollection<ToDoList> _toDoListRepository;
+        #endregion
 
+        #region Public Methods
         public ToDoListQueryRepository(IToDoListDataBaseSettings settings)
         {
             var client = new MongoClient(settings.ConnectionString);
@@ -30,5 +32,6 @@ namespace ToDoListMicroService.Repository
             var toDos = await _toDoListRepository.FindAsync(x => x.UserId.ToLower() == userId.ToLower() && x.Name.ToLower() == taskName.ToLower());
             return toDos.FirstOrDefault();
         }
+        #endregion
     }
 }

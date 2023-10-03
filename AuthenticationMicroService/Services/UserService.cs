@@ -28,7 +28,8 @@ namespace AuthenticationMicroService.Services
             var user = new User()
             {
                 UserName = register.UserName,
-                Password= register.Password
+                Password= register.Password,
+                Role = register.RoleName
             };
 
             _userService.InsertOne(user);
@@ -42,6 +43,12 @@ namespace AuthenticationMicroService.Services
 
             return response != null;
         }
-       
+
+        public User GetLoginUser(Login login)
+        {
+            var response = _userService.Find(x => x.UserName.ToLower() == login.UserName.ToLower() && x.Password.ToLower() == login.Password.ToLower()).FirstOrDefault();
+
+            return response;
+        }
     }
 }

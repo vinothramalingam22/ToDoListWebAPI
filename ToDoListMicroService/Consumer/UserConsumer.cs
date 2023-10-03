@@ -9,9 +9,8 @@ namespace ToDoListMicroService.Consumer
         public async Task Consume(ConsumeContext<UserMessageQueue> context)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            var data = context.Message;
-           /// await _service.Delete(data.CompanyCode);
-            Console.Write(data.UserId);
+            var data = context.Message;           
+            Console.Write(data.UserId); //We can use this Consumed user Id to get the data from database
         }
     }
 }

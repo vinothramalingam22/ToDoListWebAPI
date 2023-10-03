@@ -4,8 +4,11 @@ namespace ToDoListMicroService.Services
 {
     public class TokenService : ITokenService
     {
+        #region Private declaration
         private readonly IHttpContextAccessor _httpContextAccessor;
+        #endregion
 
+        #region Public Methods
         public TokenService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -28,6 +31,6 @@ namespace ToDoListMicroService.Services
 
             return result;
         }
-    
+        #endregion
     }
 }

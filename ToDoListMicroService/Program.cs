@@ -9,13 +9,13 @@ using System.Text;
 using MassTransit;
 using ToDoListMicroService.Consumer;
 using Microsoft.OpenApi.Models;
-using ToDoListMicroService.QueriesHandler;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddLog4Net();
 
+// Add services to the container.
 builder.Services.Configure<ToDoListDataBaseSettings>(builder.Configuration.GetSection(nameof(ToDoListDataBaseSettings)));
 
 builder.Services.AddSingleton<IToDoListDataBaseSettings>(sp => sp.GetRequiredService<IOptions<ToDoListDataBaseSettings>>().Value);
@@ -31,6 +31,7 @@ var usename = configSection.GetSection("Username").Value;
 var password = configSection.GetSection("Password").Value;
 var queueName = configSection.GetSection("QueueName").Value;
 
+//RabbitMQ - Mass Transit
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserConsumer>();
@@ -52,19 +53,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMediatR(typeof(Program).Assembly);
 builder.Services.AddCors();
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-    builder =>
-    {
-        builder.WithOrigins("http://localhost:4200")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
-    });
-});
+////builder.Services.AddCors(options =>
+////{
+////    options.AddDefaultPolicy(
+////    builder =>
+////    {
+////        builder.WithOrigins("http://localhost:4200")
+////                            .AllowAnyHeader()
+////                            .AllowAnyMethod();
+////    });
+////});
 
-builder.Services.AddAuthorization();
-
+//JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -74,8 +74,8 @@ builder.Services.AddAuthentication(options =>
 {
     o.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidIssuer = "http://localhost:5265/",
-        ValidAudience = "http://localhost:5265/",
+        ValidIssuer = builder.Configuration.GetSection("Jwt:Issuer").Value,
+        ValidAudience = builder.Configuration.GetSection("Jwt:Audience").Value,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 builder.Configuration.GetSection("AppSettings:Token").Value)),        
         ValidateIssuer = false,
@@ -84,38 +84,35 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = false
     };
 });
+
 //Swagger
-builder.Services.AddSwaggerGen(options =>
+builder.Services.AddSwaggerGen(option =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "APIs", Version = "v1" });
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "TODO List API", Version = "v1" });
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Please enter a valid token",
+        Description = " ",
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.Http,
         BearerFormat = "JWT",
         Scheme = "Bearer"
     });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
             {
-                Name = "Token",
-                Type = SecuritySchemeType.ApiKey,
-                In = ParameterLocation.Header,
                 Reference = new OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Token",
-                },
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
             },
             new string[]{}
         }
     });
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -129,19 +126,10 @@ app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
 
-
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-////app.UseCors("Cors");
-////app.UseCors(builder =>
-////{
-////    builder
-////    .AllowAnyOrigin()
-////    .AllowAnyMethod()
-////    .AllowAnyHeader();
-////});
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

@@ -7,8 +7,11 @@ namespace ToDoListMicroService.QueriesHandler
 {
     public class GetToDoListDetailsHandler: IRequestHandler<GetToDoListDetailsQuery, ToDoListResponseModel>
     {
+        #region Private variable
         private readonly IToDoListQueryRepository _toDoListQueryRepository;
+        #endregion
 
+        #region Public Methods
         public GetToDoListDetailsHandler(IToDoListQueryRepository toDoListQueryRepository)
         {
             _toDoListQueryRepository = toDoListQueryRepository;
@@ -38,4 +41,5 @@ namespace ToDoListMicroService.QueriesHandler
             return null;
         }
     }
+    #endregion Public Methods
 }

@@ -1,22 +1,26 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using AuthenticationMicroService.Models;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
+using System.Security.Claims;
 
 namespace AuthenticationMicroService.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        #region Private declaration
+        
         private readonly IConfiguration _configuration;
 
-        public TokenService(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
-        {
-            _httpContextAccessor = httpContextAccessor;
+        #endregion
+
+        public TokenService(IConfiguration configuration)
+        {            
             _configuration = configuration;
         }
 
-        public string GenerateToken(string userName)
+        #region Public Methods
+        public string GenerateToken(Login userInfo)
         {                  
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                  _configuration.GetSection("AppSettings:Token").Value));
@@ -27,15 +31,16 @@ namespace AuthenticationMicroService.Services
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim("Id", Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.Name, userName),
-                    new Claim(JwtRegisteredClaimNames.Sub, userName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    new Claim(ClaimTypes.Name, userInfo.UserName),
+                    new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Role, userInfo.RoleName)
                 }),
-                Expires = DateTime.Now.AddMinutes(10),
-                Issuer = "http://localhost:5265",
-                Audience = "http://localhost:5265",
+                Expires = DateTime.Now.AddMinutes(20),
+                Issuer = _configuration.GetSection("Jwt:Issuer").Value,
+                Audience = _configuration.GetSection("Jwt:Audience").Value,
                 SigningCredentials = signinCredentials,
-                IssuedAt = DateTime.Now
+                IssuedAt = DateTime.UtcNow
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();            
@@ -43,5 +48,7 @@ namespace AuthenticationMicroService.Services
             var stringToken = tokenHandler.WriteToken(token);
             return stringToken;
         }
+
+        #endregion
     }
 }

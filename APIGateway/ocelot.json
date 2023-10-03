@@ -10,7 +10,7 @@
         }
       ],
       "UpstreamPathTemplate": "/toDoList/getall",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": ["GET"]
     }
   ]
 }
